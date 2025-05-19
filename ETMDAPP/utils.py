@@ -6,13 +6,10 @@ import numpy as np
 from django.db.models import Count
 from django.core.mail import send_mail
 from django.conf import settings
-from .models import Task, FinishedTask
 import matplotlib.pyplot as plt
 from django_pandas.io import read_frame
 from wordcloud import WordCloud
 import pandas as pd
-from .models import Task, FinishedTask
-from django.db.models import Count
 import datetime
 from django.utils import timezone
 import matplotlib
@@ -59,38 +56,37 @@ def send_email_to_employee(email, new_email):
 
 
 def generate_task_distribution_plot():
-    tasks = Task.objects.all()
-    df_tasks = read_frame(tasks)
+    # Lấy tên người được giao nhiệm vụ
+    tasks = Task.objects.select_related('assigned_to').values('assigned_to__name')
+    df_tasks = pd.DataFrame(tasks)
+    df_tasks.rename(columns={'assigned_to__name': 'assigned_to'}, inplace=True)
 
-    # Ensure the 'assigned_to' field is the employee's name
+    if 'assigned_to' not in df_tasks.columns:
+        print("Cột 'assigned_to' không tồn tại trong DataFrame.")
+        return
+
     task_counts = df_tasks['assigned_to'].value_counts()
+    print(df_tasks.columns)
 
     # Sort task counts in descending order
     task_counts = task_counts.sort_values(ascending=False)
 
     plt.figure(figsize=(12, 8))
 
-    # Create gradient colormap from dark blue to light blue
     colormap = plt.cm.Blues
     norm = mcolors.Normalize(vmin=0, vmax=len(task_counts))
     colors = [colormap(norm(i)) for i in range(len(task_counts))]
 
-    bars = task_counts.plot(kind='bar', color=colors, edgecolor='black')
+    task_counts.plot(kind='bar', color=colors, edgecolor='black')
 
     plt.title('Task Distribution Among Employees', fontsize=16)
     plt.xlabel('Employee', fontsize=14)
     plt.ylabel('Number of Tasks', fontsize=14)
-
-    # Set y-axis to integer scale
     plt.gca().yaxis.set_major_locator(plt.MaxNLocator(integer=True))
-
     plt.xticks(rotation=45, ha='right', fontsize=12)
     plt.yticks(fontsize=12)
 
-    # Calculate percentiles
     percentiles = np.percentile(task_counts, [25, 50, 75])
-
-    # Categorize tasks based on percentiles
     categories = []
     for count in task_counts:
         if count >= percentiles[2]:
@@ -100,15 +96,14 @@ def generate_task_distribution_plot():
         else:
             categories.append('Light workload')
 
-    # Create legend with colors corresponding to the bars
-    legend_handles = []
-    for i, (label, color) in enumerate(zip(categories, colors)):
-        if label not in legend_handles:
-            legend_handles.append(label)
-            plt.bar(0, 0, color=color, label=label)  # Dummy bars for legend
+    # Legend
+    legend_labels = set()
+    for i, label in enumerate(categories):
+        if label not in legend_labels:
+            legend_labels.add(label)
+            plt.bar(0, 0, color=colors[i], label=label)
 
     plt.legend(loc='upper right', fontsize=12)
-
     plt.tight_layout()
     plt.savefig('ETMDAPP/static/CHARTS/task_distribution.png')
     plt.close()
@@ -193,19 +188,39 @@ def generate_completed_tasks_over_time_plot():
 
 def generate_employee_performance_plot():
     # Query all tasks
-    tasks = Task.objects.all()
+    tasks = Task.objects.all().prefetch_related('assigned_to')
     finished_tasks = FinishedTask.objects.filter(finished=True)
 
     # Convert queryset to DataFrame
     df_tasks = read_frame(tasks)
     df_finished_tasks = read_frame(finished_tasks)
+    
+    # Loại bỏ khoảng trắng thừa và đổi tên cột thành chữ thường
+    df_tasks.columns = df_tasks.columns.str.strip().str.lower()
+    df_finished_tasks.columns = df_finished_tasks.columns.str.strip().str.lower()
 
-    # Group tasks by assigned employee and count the number of tasks for each employee
-    employee_task_counts = df_tasks['assigned_to'].value_counts()
+    print(df_tasks.columns)
+    
+    # Lấy danh sách nhân viên gắn với mỗi nhiệm vụ (many-to-many)
+    df_tasks['assigned_to'] = df_tasks['assigned_to'].apply(lambda x: [emp.name for emp in x.all()])
 
-    # Group finished tasks by assigned employee and count the number of completed tasks for each employee
-    employee_finished_task_counts = df_finished_tasks['assigned_to'].value_counts(
-    )
+    # Nếu không có cột 'assigned_to', in ra thông báo
+    if 'assigned_to' in df_tasks.columns:
+        # Flatten the list of assigned employees to count task assignments per employee
+        task_data = df_tasks.explode('assigned_to')  # Mỗi nhân viên gán vào một dòng
+        employee_task_counts = task_data['assigned_to'].value_counts()
+    else:
+        print("Cột 'assigned_to' không tồn tại trong DataFrame.")
+
+    # Lấy danh sách nhân viên gắn với nhiệm vụ hoàn thành (many-to-many)
+    df_finished_tasks['assigned_to'] = df_finished_tasks['assigned_to'].apply(lambda x: [emp.name for emp in x.all()])
+    
+    if 'assigned_to' in df_finished_tasks.columns:
+        # Flatten the list of assigned employees to count finished tasks per employee
+        finished_task_data = df_finished_tasks.explode('assigned_to')
+        employee_finished_task_counts = finished_task_data['assigned_to'].value_counts()
+    else:
+        print("Cột 'assigned_to' không tồn tại trong DataFrame.")
 
     # Merge the two DataFrames on employee name and fill missing values with 0
     df_employee_performance = pd.merge(
@@ -318,33 +333,26 @@ def generate_task_distribution_by_priority_plot():
     plt.savefig('ETMDAPP/static/CHARTS/task_distribution_by_priority.png')
     plt.close()
 
-# Function to generate task duration distribution histogram
+def generate_task_duration_distribution_plot():
+    tasks = Task.objects.all()
+    df_tasks = read_frame(tasks)
 
+    # Drop rows with null values in deadline_date or created_at columns
+    df_tasks = df_tasks.dropna(subset=['deadline_date', 'created_at'])
 
-# Function to generate task duration distribution histogram
-# def generate_task_duration_distribution_plot():
-#     tasks = Task.objects.all()
-#     df_tasks = read_frame(tasks)
+    # Convert deadline_date and created_at columns to datetime if not already
+    df_tasks['deadline_date'] = pd.to_datetime(df_tasks['deadline_date'])
+    df_tasks['created_at'] = pd.to_datetime(df_tasks['created_at'])
 
-#     # Drop rows with null values in deadline_date or created_at columns
-#     df_tasks = df_tasks.dropna(subset=['deadline_date', 'created_at'])
+    # Calculate task durations in days
+    task_durations = (df_tasks['deadline_date'] - df_tasks['created_at']).dt.days
 
-#     # Convert deadline_date and created_at columns to datetime if not already
-#     df_tasks['deadline_date'] = pd.to_datetime(df_tasks['deadline_date'])
-#     df_tasks['created_at'] = pd.to_datetime(df_tasks['created_at'])
-
-#     # Calculate task durations in days
-#     task_durations = (df_tasks['deadline_date'] -
-#                       df_tasks['created_at']).dt.days
-
-#     plt.figure(figsize=(10, 6))
-#     plt.hist(task_durations, bins=20)
-#     plt.title('Task Duration Distribution')
-#     plt.xlabel('Task Duration (days)')
-#     plt.ylabel('Frequency')
-#     plt.xticks(rotation=0)
-#     plt.tight_layout()
-#     plt.savefig('task_duration_distribution.png')
-#     plt.close()
-
-
+    plt.figure(figsize=(10, 6))
+    plt.hist(task_durations, bins=20, color='steelblue', edgecolor='black')
+    plt.title('Task Duration Distribution')
+    plt.xlabel('Task Duration (days)')
+    plt.ylabel('Frequency')
+    plt.xticks(rotation=0)
+    plt.tight_layout()
+    plt.savefig('ETMDAPP/static/CHARTS/task_duration_distribution.png')
+    plt.close()

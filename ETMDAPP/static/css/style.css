@@ -346,3 +346,21 @@ body {
 .content-wrap .person-boxes .person-box .box-actions button:hover svg circle {
   fill: #2b3a60;
 }
+.back-button {
+  font-size: 20px;  /* Thay đổi kích thước chữ nếu cần */
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;  /* Tăng khoảng cách trong nút */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: auto;  /* Chỉ để chiều rộng tự động, không kéo dài */
+  max-width: 200px;  /* Giới hạn chiều rộng tối đa */
+  text-align: center;  /* Canh giữa chữ trong nút */
+}
+
+.back-button:hover {
+  background-color: #0056b3;
+}
+
+

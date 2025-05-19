@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Department List</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Include Font Awesome CSS -->
+    <title>Danh sách phòng ban</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Bao gồm CSS của Font Awesome -->
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -13,7 +13,7 @@
             background-image: url('https://source.unsplash.com/1600x900/?department');
             background-size: cover;
             background-position: center;
-            color: black; /* Set text color to black */
+            color: black; /* Đặt màu chữ là đen */
         }
         h1 {
             text-align: center;
@@ -24,15 +24,15 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
         .container {
-            width: 80%; /* Set container width to 80% */
-            margin: 0 auto; /* Center align the container */
-            background-color: rgba(255, 255, 255, 0.9); /* Set background color with opacity */
-            padding: 20px; /* Add some padding */
-            border-radius: 10px; /* Add border radius for rounded corners */
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3); /* Add box shadow for depth */
+            width: 80%; /* Đặt chiều rộng của container là 80% */
+            margin: 0 auto; /* Canh giữa container */
+            background-color: rgba(255, 255, 255, 0.9); /* Đặt màu nền với độ mờ */
+            padding: 20px; /* Thêm một chút padding */
+            border-radius: 10px; /* Thêm bo góc */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3); /* Thêm bóng cho độ sâu */
         }
         .table-container {
-            overflow-x: auto; /* Enable horizontal scrolling for smaller screens */
+            overflow-x: auto; /* Bật cuộn ngang cho màn hình nhỏ */
         }
         table {
             width: 100%;
@@ -97,13 +97,13 @@
     </style>
 </head>
 <body>
-    <h1>Department List</h1>
+    <h1>Danh sách phòng ban</h1>
     <div class="container">
          <div class="search-container">
             <form method="POST" action="{% url 'search_department' %}">
                 {% csrf_token %}
-                <input type="text" id="name" name="name" value="{{ query_name }}" placeholder="Search by Name">
-                <button type="submit">Search</button>
+                <input type="text" id="name" name="name" value="{{ query_name }}" placeholder="Tìm kiếm theo tên">
+                <button type="submit">Tìm kiếm</button>
             </form>
         </div>
          <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -113,13 +113,13 @@
                 var name = $('#name').val();
 
                 $.ajax({
-                    url: '', // Submit to the same URL
+                    url: '', // Gửi tới cùng một URL
                     method: 'POST',
                     data: {
                         name: name
                     },
                     success: function(response) {
-                        $('#departmentTableContainer').html(response); // Update department table content
+                        $('#departmentTableContainer').html(response); // Cập nhật nội dung bảng phòng ban
                     },
                     error: function(xhr, status, error) {
                         console.error(xhr.responseText);
@@ -129,15 +129,18 @@
         });
     </script>
         <div class="table-container">
+            <a href="{% url 'AdminDashboard' %}" class="back-link">
+                <i class="fas fa-arrow-left"></i> Quay lại bảng điều khiển
+            </a>
             <table>
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Code</th>
-                        <th>Head</th>
-                        <th>Location</th>
-                        <th>Description</th>
-                        <th>Actions</th>
+                        <th>Tên</th>
+                        <th>Mã</th>
+                        <th>Trưởng phòng</th>
+                        <th>Vị trí</th>
+                        <th>Mô tả</th>
+                        <th>Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -149,10 +152,10 @@
                             <td>{{ department.location }}</td>
                             <td>{{ department.description }}</td>
                             <td>
-                                <!-- Example template usage -->
-                                <a href="{% url 'edit_department' department_id=department.id %}">Edit Department</a>
-                                <i class="fas fa-edit"></i></a> <!-- Edit icon -->
-                                <a href="{% url 'delete_department' department.pk %}" class="delete-icon"><i class="fas fa-trash-alt"></i></a> <!-- Delete icon -->
+                                <!-- Ví dụ sử dụng template -->
+                                <a href="{% url 'edit_department' department_id=department.id %}">Chỉnh sửa phòng ban</a>
+                                <i class="fas fa-edit"></i></a> <!-- Biểu tượng chỉnh sửa -->
+                                <a href="{% url 'delete_department' department.pk %}" class="delete-icon"><i class="fas fa-trash-alt"></i></a> <!-- Biểu tượng xóa -->
                             </td>
                         </tr>
                     {% endfor %}
@@ -162,7 +165,7 @@
     </div>
      <script>
             function confirmDelete(name, url) {
-                if (confirm(`Are you sure you want to delete ${name}?`)) {
+                if (confirm(`Bạn có chắc chắn muốn xóa ${name}?`)) {
                     window.location.href = url;
                 }
             }

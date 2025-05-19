@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Employee Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 30px;
+            background: #f9f9f9;
+        }
+        .dashboard {
+            display: flex;
+            gap: 20px;
+        }
+        .box {
+            flex: 1;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            color: white;
+        }
+        .box i {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        .green { background-color: #28a745; }
+        .blue { background-color: #007bff; }
+        .orange { background-color: #fd7e14; }
+        h3 {
+            margin-top: 10px;
+            font-size: 28px;
+        }
+        p {
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Chào mừng bạn đến với bảng mô tả công việc</h1>
+
+    <div class="dashboard">
+        <div class="box green">
+            <p><i class="fas fa-tasks"></i></p>
+            <p>Tổng số công việc</p>
+            <h3>{{ total_tasks }}</h3>
+        </div>
+
+        <div class="box blue">
+            <p><i class="fas fa-check-circle"></i></p>
+            <p>Công việc đã hoàn thành</p>
+            <h3>{{ completed_tasks }}</h3>
+        </div>
+    </div>
+
+    <hr><br>
+
+    <h2>Danh sách công việc của bạn</h2>
+{% if tasks %}
+    <ul>
+        {% for task in tasks %}
+            <li>
+                <strong>{{ task.title }}</strong> - Deadline: {{ task.deadline_date }} {{ task.deadline_time }}
+                <a href="{% url 'update_assignment' task.id %}">Cập nhật tiến độ</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Không có công việc nào được giao.</p>
+{% endif %}
+    <a href="{% url 'EMPDashboard' %}" class="back-link">
+        <i class="fas fa-arrow-left"></i> Quay lại bảng điều khiển
+    </a>
+
+</body>
+</html>

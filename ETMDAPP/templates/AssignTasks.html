@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách công việc được giao</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h2, h3 {
+            color: #333;
+        }
+        .employee-section {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .task {
+            margin-top: 10px;
+            padding: 10px;
+            border-top: 1px solid #eee;
+        }
+        .progress-bar-container {
+            background-color: #eee;
+            border: 1px solid #ccc;
+            width: 100%;
+            height: 15px;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+        .progress-bar {
+            background-color: #4caf50;
+            height: 100%;
+            border-radius: 4px;
+        }
+    </style>
+    <meta http-equiv="refresh" content="30"> 
+</head>
+<body>
+    <h2>Danh sách công việc được giao</h2>
+    <a href="{% url 'AdminDashboard' %}" class="back-link">
+        <i class="fas fa-arrow-left"></i> Quay lại bảng điều khiển
+    </a>
+    {% for entry in employee_data %}
+        <div class="employee-section">
+            <h3>{{ entry.employee.name }}</h3>
+            <p><strong>Email:</strong> {{ entry.employee.email }}</p>
+            <p><strong>Phòng ban:</strong> {{ entry.employee.department }}</p>
+
+            {% if entry.tasks %}
+                {% for item in entry.tasks %}
+                    <div class="task">
+                        <p><strong>Công việc:</strong> {{ item.task.title }}</p>
+                        <p><strong>Mô tả:</strong> {{ item.task.description }}</p>
+                        <p><strong>Hạn chót:</strong> {{ item.task.deadline_date }} {{ item.task.deadline_time }}</p>
+                        <p><strong>Tiến độ:</strong> {{ item.progress }}%</p>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" style="width: {{ item.progress }}%;"></div>
+                        </div>
+                        <p><strong>Ghi chú:</strong> {{ item.notes|default:"-" }}</p>
+                        <p><strong>Ngày bắt đầu:</strong> {{ item.start_date|default:"-" }}</p>
+                        <p><strong>Cập nhật lúc:</strong> {{ item.updated_at|date:"d/m/Y H:i" }}</p>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p><em>Chưa được giao công việc nào.</em></p>
+            {% endif %}
+        </div>
+    {% endfor %}
+</body>
+</html>

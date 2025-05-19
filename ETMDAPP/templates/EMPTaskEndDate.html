@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task End Dates</title>
+    <title>Ngày Kết Thúc Công Việc</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome CSS -->
@@ -82,7 +82,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Task End Dates</h1>
+        <h1>Ngày Kết Thúc Công Việc</h1>
         <ul class="task-list">
             {% for task in tasks %}
             <li class="task-item">
@@ -91,7 +91,7 @@
                     <div>
                         <h2>{{ employe.name }}</h2>
                         <p class="task-title">{{ task.title }}</p>
-                        <p class="end-date"><strong>End Date:</strong> {{ task.deadline_date }} {{ task.deadline_time }}</p>
+                        <p class="end-date"><strong>Hạn cuối: </strong> {{ task.deadline_date }} {{ task.deadline_time }}</p>
                     </div>
                 </div>
             </li>

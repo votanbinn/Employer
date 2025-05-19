@@ -1,7 +1,10 @@
 from django.core.exceptions import ValidationError
-import json
-from django.http import JsonResponse
+from .forms import TaskAssignmentForm
 from .models import EmployeeSignUp
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import make_password, check_password
+from django.utils import timezone
+from django.http import HttpResponse
 from .utils import (
     generate_task_distribution_plot,
     generate_remaining_tasks_plot,
@@ -12,34 +15,31 @@ from .utils import (
     generate_completion_rate_by_employee_plot,
     generate_task_distribution_by_category_plot,
     generate_task_distribution_by_priority_plot,
-    # generate_task_duration_distribution_plot
+    generate_task_duration_distribution_plot,  # Đảm bảo hàm này không bị bỏ qua nếu cần
 )
 from django.contrib.auth import authenticate, login
-from django.contrib import messages
 from .models import FinishedTask
 from django.shortcuts import redirect, render, get_object_or_404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.shortcuts import redirect, render
-from .utils import send_email_to_employee
 from .models import Task
 from .models import EmployeeSignUp  # Import the Employee model
 from .models import Task, FinishedTask
 from .forms import TaskForm
 from .models import Employee, Task
-import csv
 from .forms import ContactForm
-from .models import Contact
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse
+from .forms import TaskAssignmentForm
 from .forms import DepartmentForm
 from .models import Department
+from .models import TaskAssignment
 from .forms import EmployeeForm
 from .forms import EmployeeForm  # Import the form
-from django.core.files.storage import FileSystemStorage
 from .models import Employee
 from django.shortcuts import render, redirect
 from .models import Admin
 from django.shortcuts import render
+from django.db.models import Count
 
 # Create your views here.
 
@@ -52,60 +52,38 @@ def REGIEMP(request):
 
     if request.method == "POST":
         try:
-            # Retrieve form data
-            name = request.POST.get("firstname")
-            department = request.POST.get("department")
-            employee_id = request.POST.get("id")
-            address = request.POST.get("address")
-            contact_number = request.POST.get("number")
-            destination = request.POST.get("dest")
-            date_of_birth = request.POST.get("dob")
-            date_of_joining = request.POST.get("doj")
-            email = request.POST.get("email")
-            newemail = request.POST.get("newemail")
-            password = request.POST.get("pass")
-            designation = request.POST.get("des")
-            description = request.POST.get("desc")
-
-            # Save uploaded picture
-            if 'pictureInput' in request.FILES:
-                picture = request.FILES['pictureInput']
-                fs = FileSystemStorage()
-                filename = fs.save(picture.name, picture)
-                picture_url = fs.url(filename)
-            else:
-                picture_url = None
-
-            # Send email to employee
-            send_email_to_employee(email, newemail)
-
-            # Create and save Employee object
-            employee = Employee.objects.create(
-                name=name,
-                department=department,
-                employee_id=employee_id,
-                address=address,
-                contact_number=contact_number,
-                destination=destination,
-                date_of_birth=date_of_birth,
-                date_of_joining=date_of_joining,
-                email=email,
-                newemail=newemail,
-                password=password,
-                designation=designation,
-                description=description,
-                picture=picture_url  # Assign the URL of the uploaded picture
+            emp = Employee(
+                name=request.POST.get("firstname"),
+                department=request.POST.get("department"),
+                employee_id=request.POST.get("id"),
+                address=request.POST.get("address"),
+                contact_number=request.POST.get("number"),
+                destination=request.POST.get("dest"),
+                date_of_birth=request.POST.get("dob"),
+                date_of_joining=request.POST.get("doj"),
+                email=request.POST.get("email"),
+                designation=request.POST.get("des"),
+                description=request.POST.get("desc"),
             )
 
-            # Redirect to the admin dashboard after successful registration
-            return redirect("AdminDashboard")
-        except Exception as e:
-            # Handle any exception and return an error response
-            error_message = "An error occurred while processing your request."
-            return render(request, "error.html", {'error_message': error_message})
+            # Xử lý hình ảnh nếu có
+            if request.FILES.get("pictureInput"):
+                emp.picture = request.FILES["pictureInput"]
 
-    # Render the registration form template for GET requests
-    return render(request, "REGIEMP.html", {'departments': departments})
+            emp.save()
+            return render(request, "REGIEMP.html", {
+                "success_message": "Thêm nhân viên thành công!",
+                "departments": departments
+            })
+        except Exception as e:
+            print("Lỗi khi thêm nhân viên:", e)
+            return render(request, "REGIEMP.html", {
+                "error_message": "Có lỗi xảy ra!",
+                "departments": departments
+            })
+
+    return render(request, "REGIEMP.html", {"departments": departments})
+
 
 
 def employeesignuplogin(request):
@@ -117,23 +95,23 @@ def employeesignuplogin(request):
         if email and password:
             try:
                 user = EmployeeSignUp.objects.get(email=email)
-                if password == user.password:
+                # Use check_password to compare hashed password
+                if check_password(password, user.password):
                     # Authentication successful
                     print("Authentication successful")
-                    # Replace 'EMPDashboard' with the actual URL name for the employee dashboard
+                    # Store user info in session
                     request.session['EmployeeEmail'] = email
                     request.session['EmployeeUsername'] = user.name
                     return redirect("EMPDashboard")
                 else:
                     # Authentication failed - invalid password
                     print("Authentication failed: Invalid password")
-                    # Render login page with error message
                     return render(request, "LOGIN.html", {'error_message': "Invalid email or password"})
             except EmployeeSignUp.DoesNotExist:
                 # Authentication failed - user not found
                 print("Authentication failed: User not found")
-                # Render login page with error message
                 return render(request, "LOGIN.html", {'error_message': "Invalid email or password"})
+
         else:
             # Signup process
             name = request.POST.get("Name")
@@ -142,25 +120,20 @@ def employeesignuplogin(request):
 
             # Check if email and password are provided for signup
             if email and password:
-                # Check if the email is already registered
                 if EmployeeSignUp.objects.filter(email=email).exists():
-                    # Render signup page with error message
+                    # Email already exists
                     return render(request, "LOGIN.html", {'error_message': "Email is already registered. Please use a different email."})
 
-                # Create a new user instance
-                new_user = EmployeeSignUp(
-                    name=name, email=email, password=password)
-                # Save the new user to the database
+                # Hash password before saving
+                hashed_password = make_password(password)
+                new_user = EmployeeSignUp(name=name, email=email, password=hashed_password)
                 new_user.save()
 
-                # Redirect to login page after successful signup
-                # Render login page with success message
+                # Successful signup, prompt user to login
                 return render(request, "LOGIN.html", {'success_message': "Sign up successful! Please log in"})
 
             else:
-                # No email or password provided for signup or login
-                print("No email or password provided")
-                # Render login page with error message
+                # Missing email or password for signup or login
                 return render(request, "LOGIN.html", {'error_message': "Please provide email and password"})
 
     # Render the login page for GET requests
@@ -221,7 +194,7 @@ def search_employee(request):
 def delete_employee(request, pk):
     employee = Employee.objects.get(pk=pk)
     employee.delete()
-    return redirect('AdminDashboard')
+    return redirect('employee_list')
 
 
 def edit_employee(request, pk):
@@ -241,40 +214,56 @@ def ABOUT(request):
 
 def EMPDASHBOARD(request):
     try:
-        # Get email from session
         email = request.session.get("EmployeeEmail")
 
-        if email:
-            # Filter tasks by assigned_to email
-            tasks = Task.objects.filter(email=email)
-
-            # Get total number of tasks
-            total_tasks = tasks.count()
-
-            # Get number of in-progress tasks with high priority
-            in_progress_tasks = tasks.filter(
-                priority='High',
-            ).count()
-
-            # Get number of completed tasks
-            completed_tasks = FinishedTask.objects.filter(
-                email=email, finished=True
-            ).count()
-
-            # Render the template with counts
-            return render(request, "EMPDashboard.html", {
-                'total_tasks': total_tasks,
-                'in_progress_tasks': in_progress_tasks,
-                'completed_tasks': completed_tasks,
+        if not email:
+            return render(request, "error.html", {
+                'error_message': "Session data missing. Please log in again."
             })
-        else:
-            # Handle the case where email is not found in the session
-            error_message = "Session data missing. Please log in again."
-            return render(request, "error.html", {'error_message': error_message})
+
+        employee = Employee.objects.get(email=email)
+
+        # Tổng số công việc (trong bảng Task, chưa hoàn thành)
+        total_tasks = Task.objects.filter(assigned_to=employee).count()
+
+        # Công việc vừa bắt đầu (tiến độ từ 1 đến 10%)
+        just_started_tasks = TaskAssignment.objects.filter(
+            employee=employee,
+            progress__gte=1,
+            progress__lte=10
+        ).count()
+
+        # Công việc đang làm (tiến độ từ 11 đến 99%)
+        in_progress_tasks = TaskAssignment.objects.filter(
+            employee=employee,
+            progress__gt=10,
+            progress__lt=100
+        ).count()
+
+        # Công việc đã hoàn thành
+        completed_tasks = FinishedTask.objects.filter(
+            assigned_to=employee,
+            finished=True
+        ).count()
+
+        return render(request, "EMPDashboard.html", {
+            'total_tasks': total_tasks,
+            'just_started_tasks': just_started_tasks,
+            'in_progress_tasks': in_progress_tasks,
+            'completed_tasks': completed_tasks,
+        })
+
+    except Employee.DoesNotExist:
+        return render(request, "error.html", {
+            'error_message': "Employee not found."
+        })
     except Exception as e:
-        # Handle other exceptions
-        error_message = "An error occurred while processing your request."
-        return render(request, "error.html", {'error_message': error_message})
+        return render(request, "error.html", {
+            'error_message': f"An unexpected error occurred: {str(e)}"
+        })
+
+
+
     
 def REGIDMENT(request):
     return render(request, "REGIDMENT.html")
@@ -306,29 +295,29 @@ def logout(request):
  
 def ADMINLOGIN(request):
     if request.method == "POST":
-        admin_id = request.POST.get("email")
+        # Lấy email và mật khẩu từ form
+        admin_email = request.POST.get("email")
         password = request.POST.get("password")
 
         try:
-            # Retrieve admin data based on admin_id
-            admin = Admin.objects.get(admin_id=admin_id)
+            # Truy vấn admin dựa trên email
+            admin = Admin.objects.get(email=admin_email)
         except Admin.DoesNotExist:
-            return redirect("ADMINLOGIN")
+            return render(request, "adminlogin.html", {"error_message": "Admin not found"})
 
-        # Check if the provided password matches the admin's password
-        if admin.password == password:
-            # Create session for admin's email
-            request.session['admin_email'] = admin.admin_id
+        # Kiểm tra nếu mật khẩu đúng
+        if check_password(password, admin.password):
+            # Tạo session cho admin
+            request.session['admin_email'] = admin.email
 
-            # Redirect to admin dashboard or render a template
-            total_employees = Employee.objects.count()
+            # Redirect đến trang Dashboard của admin
+            total_employees = Employee.objects.count()  # Nếu cần, có thể sử dụng biến này ở đâu đó
             return redirect("AdminDashboard")
         else:
             return render(request, "adminlogin.html", {"error_message": "Invalid credentials"})
 
-    # Get the admin email from the session, if available
+    # Nếu không phải POST, trả về trang login với admin_email trong session (nếu có)
     admin_email = request.session.get('admin_email', None)
-
     return render(request, "adminlogin.html", {"admin_email": admin_email})
 
 
@@ -358,7 +347,7 @@ def AdminDashboard(request):
         })
     except Exception as e:
         # Handle any exceptions
-        error_message = "An error occurred while loading the admin dashboard."
+        error_message = f"An error occurred: {str(e)}"
         return render(request, "error.html", {'error_message': error_message})
 
 
@@ -424,13 +413,12 @@ def search_department(request):
     if request.method == 'POST':
         name = request.POST.get('name', '')
         departments = Department.objects.filter(name__icontains=name)
-        return render(request,'Dlist.html', {'departments': departments})
-# views.pyrender
+        return render(request, 'Dlist.html', {'departments': departments})
+    else:
+        # Trả về một trang tìm kiếm trống hoặc thông báo
+        return render(request, 'department_search_results.html')  # giả sử bạn có một form tìm kiếm
 
-# views.py
 
-
-# views.py
 def CONTACT(request):
     try:
         if request.method == 'POST':
@@ -451,48 +439,78 @@ def CONTACT(request):
 def assign_task(request):
     if request.method == 'POST':
         form = TaskForm(request.POST)
-        print(form)
         if form.is_valid():
-            form.save()  # Save the form data to the database
-            return redirect('AdminDashboard')  # Redirect to a success page
+            task = form.save()
+            assigned_employees = form.cleaned_data['assigned_to']
+            task.assigned_to.set(assigned_employees)
+            task.save()
+
+            # ✅ Tạo bản ghi TaskAssignment cho mỗi nhân viên
+            for employee in assigned_employees:
+                TaskAssignment.objects.create(
+                    task=task,
+                    employee=employee,
+                    progress=0  # Ban đầu 0%
+                )
+
+            return redirect('taskemployeelist')  # Hoặc bất kỳ tên URL nào
     else:
         form = TaskForm()
+
     return render(request, 'assigntask.html', {'form': form})
 
 
 def task_des(request):
     # Get employees who have been assigned tasks
     employees_with_tasks = Employee.objects.filter(
-        task__isnull=False).distinct()
+        task__isnull=False).distinct().annotate(task_count=Count('task'))
     return render(request, 'TaskDes.html', {'employees': employees_with_tasks})
 
 def assigned_tasks(request):
-    # Get employees who have been assigned tasks
-    employees_with_tasks = Employee.objects.filter(
-        task__isnull=False).distinct()
-    return render(request, 'taskemployeelist.html', {'employees': employees_with_tasks})
+    employee_data = []
 
+    # Lặp qua từng nhân viên
+    for emp in Employee.objects.all():
+        # Lấy danh sách các task đã giao cho nhân viên này
+        assignments = TaskAssignment.objects.filter(employee=emp).select_related('task')
 
-def finished_tasks(request):
-    finished_tasks = FinishedTask.objects.all()
-    return render(request, 'finished_tasks.html', {'finished_tasks': finished_tasks})
+        task_list = []
+        for assign in assignments:
+            task_list.append({
+                'task': assign.task,
+                'progress': assign.progress,
+                'notes': assign.notes,
+                'updated_at': assign.updated_at,
+                'start_date': assign.start_date
+            })
+
+        employee_data.append({
+            'employee': emp,
+            'tasks': task_list
+        })
+
+    return render(request, 'AssignTasks.html', {'employee_data': employee_data})
 
 
 def TaskReport(request):
     # Generate plots
     generate_task_distribution_plot()
     generate_remaining_tasks_plot()
-    generate_task_deadlines_table()
+    generate_task_deadlines_table()  # Nếu muốn dùng kết quả này trong template, cần trả về
     generate_completed_tasks_over_time_plot()
     generate_employee_performance_plot()
     generate_task_description_wordcloud()
     generate_completion_rate_by_employee_plot()
     generate_task_distribution_by_category_plot()
     generate_task_distribution_by_priority_plot()
-    # generate_task_duration_distribution_plot()    
+    generate_task_duration_distribution_plot()  # Đảm bảo không bị comment lại nếu cần thiết
 
-    # Add any additional context data you want to pass to the template
-    context = {}
+    # Nếu muốn trả về kết quả bảng deadline trong context (nếu dùng trong template)
+    deadlines_data = generate_task_deadlines_table()
+
+    context = {
+        'deadlines_data': deadlines_data  # Đưa data vào context nếu cần
+    }
 
     # Render the template
     return render(request, 'TaskReport.html', context)
@@ -508,12 +526,17 @@ def mark_task_finished(request, task_id, email):
         finished_task = FinishedTask.objects.create(
             title=task.title,
             description=task.description,
-            assigned_to=task.assigned_to,
             deadline_date=task.deadline_date,
             deadline_time=task.deadline_time,
             email=task.email,
             finished=True  # Mark the task as finished
         )
+
+        # Gán nhân viên đã được giao cho công việc gốc vào finished_task
+        finished_task.assigned_to.set(task.assigned_to.all())  # Sử dụng .all() để lấy tất cả nhân viên trong trường Many-to-Many
+
+        # Save the finished task
+        finished_task.save()
 
         # Delete the original task
         task.delete()
@@ -523,6 +546,7 @@ def mark_task_finished(request, task_id, email):
     else:
         # Handle GET requests appropriately, if needed
         pass
+
 
 
 def DEV(request):
@@ -591,12 +615,140 @@ def EmployeeTask(request):
         username = request.session.get("EmployeeUsername", None)
 
         if email:
-            tasks = Task.objects.filter(email=email)
+            # Lọc tất cả các task mà email của nhân viên có trong danh sách emails
+            tasks = Task.objects.filter(emails__contains=email)
         else:
             tasks = []
 
         return render(request, 'EmployeeTask.html', {'email': email, 'tasks': tasks, 'username': username})
     except Exception as e:
-        # Handle any exceptions
-        error_message = "An error occurred while loading the employee tasks."
+        print("=== LỖI DASHBOARD ===")  
+        print(e)  # 👈 In ra lỗi cụ thể để bạn biết
+        error_message = f"Lỗi khi load trang dashboard: {str(e)}"
         return render(request, "error.html", {'error_message': error_message})
+    
+def finished_tasks_view(request):
+    try:
+        finished_tasks = FinishedTask.objects.filter(finished=True)  # chỉ lấy các task đã đánh dấu hoàn thành
+        return render(request, 'finished_tasks.html', {'finished_tasks': finished_tasks})
+    except Exception as e:
+        print("=== LỖI HIỂN THỊ TASK HOÀN THÀNH ===")
+        print(e)
+        return render(request, 'error.html', {'error_message': str(e)})
+
+
+def employee_dashboard(request):
+    email = request.session.get("EmployeeEmail")
+
+    if email:
+        try:
+            employee = Employee.objects.get(email=email)
+            assigned_tasks = Task.objects.filter(assigned_to=employee)
+            total_tasks = assigned_tasks.count()
+            completed_tasks_qs = FinishedTask.objects.filter(assigned_to=employee, finished=True)
+            completed_tasks = completed_tasks_qs.count()
+            in_progress_tasks = total_tasks - completed_tasks
+
+            return render(request, 'employee_dashboard.html', {
+                'tasks': assigned_tasks,
+                'total_tasks': total_tasks,
+                'completed_tasks': completed_tasks,
+                'in_progress_tasks': in_progress_tasks
+            })
+
+        except Employee.DoesNotExist:
+            return HttpResponse("Không tìm thấy nhân viên.")
+
+    return redirect('login')
+
+def update_Assignment(request, task_id):
+    email = request.session.get("EmployeeEmail")
+    task = get_object_or_404(Task, id=task_id)
+    employee = get_object_or_404(Employee, email=email)
+
+    assignment, created = TaskAssignment.objects.get_or_create(task=task, employee=employee)
+
+    if request.method == 'POST':
+        form = TaskAssignmentForm(request.POST, instance=assignment)
+        if form.is_valid():
+            assignment = form.save()
+
+            if assignment.progress == 100:
+                # Tạo công việc đã hoàn thành (KHÔNG truyền task)
+                finished_task = FinishedTask.objects.create(
+                    title=task.title,
+                    description=task.description,
+                    deadline_date=task.deadline_date,
+                    deadline_time=task.deadline_time,
+                    email=task.email,
+                    finished=True
+                )
+
+                # Gán nhân viên
+                finished_task.assigned_to.set(task.assigned_to.all())
+
+                # Sau khi lưu FinishedTask mới xóa task
+                task.delete()
+
+                return redirect('employee_dashboard')
+
+            return redirect('update_assignment', task_id=task.id)
+    else:
+        form = TaskAssignmentForm(instance=assignment)
+
+    return render(request, 'update_assignment.html', {
+        'task': task,
+        'form': form,
+        'assignment': assignment,
+    })
+
+
+import pandas as pd
+from django.shortcuts import render
+import requests
+from io import BytesIO
+
+def timesheet_view(request):
+    import requests
+    import pandas as pd
+    from io import BytesIO
+    import datetime
+
+    url = 'https://docs.google.com/spreadsheets/d/1hRBixIYOX5_oaXOawR16OFmsI1UBIYNqgs30GoPJja0/export?format=xlsx'
+    response = requests.get(url)
+    if response.status_code != 200:
+        return render(request, 'Chamcong.html', {'error': 'Không tải được file Excel từ Google Sheets'})
+
+    file_bytes = BytesIO(response.content)
+    try:
+        xls = pd.ExcelFile(file_bytes)
+        sheet_names = xls.sheet_names
+
+        selected_sheet = request.GET.get('sheet', sheet_names[0])
+        selected_sheet = selected_sheet.strip()
+        match_sheets = [s for s in sheet_names if s.strip().lower() == selected_sheet.lower()]
+        if match_sheets:
+            selected_sheet = match_sheets[0]
+        else:
+            selected_sheet = sheet_names[0]
+
+        df = pd.read_excel(xls, sheet_name=selected_sheet, header=2)
+        df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
+        df.dropna(axis=1, how='all', inplace=True)
+        if df.columns[0] != 'STT':
+            df.rename(columns={df.columns[0]: 'STT'}, inplace=True)
+        df = df.fillna('')
+
+        table_html = df.to_html(classes='table table-bordered table-striped', index=False)
+
+        report_date = datetime.datetime.now().strftime('%d/%m/%Y')
+
+        context = {
+            'sheet_names': sheet_names,
+            'selected_sheet': selected_sheet,
+            'table': table_html,
+            'report_date': report_date,
+        }
+        return render(request, 'Chamcong.html', context)
+    except Exception as e:
+        return render(request, 'Chamcong.html', {'error': f'Lỗi khi đọc file Excel: {str(e)}'})

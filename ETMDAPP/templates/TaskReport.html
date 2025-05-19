@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Task Analytics Dashboard</title>
+    <title>Bảng Điều Khiển Phân Tích Công Việc</title>
     <style>
       body {
         font-family: Arial, sans-serif;
         margin: 0;
         padding: 0;
-        background-color:black;
-        color :white;
+        background-color: black;
+        color: white;
       }
       .container {
         width: 80%;
@@ -73,6 +73,10 @@
       .expanded-chart img {
         max-width: 90vw;
         max-height: 90vh;
+        transition: transform 0.3s ease-in-out;
+      }
+      .expanded-chart img:hover {
+        transform: scale(1.05);
       }
       .close-btn {
         position: absolute;
@@ -101,200 +105,153 @@
   </head>
   <body>
     <div class="container">
-      <h1>Task Analytics Dashboard</h1>
+      <h1>Bảng Điều Khiển Phân Tích Công Việc</h1>
 
+      <!-- Phân Bổ Công Việc -->
       <div class="chart-container">
         <div class="chart" onclick="expandChart(this)">
-          <h2>Task Distribution Among Employees</h2>
-          <img
-            src="/static/CHARTS/task_distribution.png"
-            alt="Task Distribution Chart"
-          />
-          <p>This chart shows the distribution of tasks among employees.</p>
+          <h2>Phân Bổ Công Việc Theo Nhân Viên</h2>
+          <img src="/static/CHARTS/task_distribution.png" alt="Biểu đồ phân bổ công việc theo nhân viên" />
+          <p>Biểu đồ này hiển thị sự phân chia công việc giữa các nhân viên.</p>
         </div>
         <div class="expanded-chart" onclick="closeExpandedChart(this)">
-          <span class="close-btn">&times;</span>
-          <img src="" alt="Expanded Chart" />
+          <span class="close-btn" aria-label="Đóng">&times;</span>
+          <img src="" alt="Biểu đồ phân bổ công việc mở rộng" />
         </div>
       </div>
 
+      <!-- Số Lượng Công Việc Còn Lại -->
       <div class="chart-container">
         <div class="chart" onclick="expandChart(this)">
-          <h2>Remaining Tasks</h2>
-          <img
-            src="/static/CHARTS/remaining_tasks.png"
-            alt="Remaining Tasks Chart"
-          />
-          <p>
-            This chart shows the proportion of remaining tasks compared to
-            finished tasks.
-          </p>
+          <h2>Số Lượng Công Việc Còn Lại</h2>
+          <img src="/static/CHARTS/remaining_tasks.png" alt="Biểu đồ số lượng công việc còn lại" />
+          <p>Biểu đồ thể hiện tỷ lệ giữa công việc đã hoàn thành và còn lại.</p>
         </div>
         <div class="expanded-chart" onclick="closeExpandedChart(this)">
-          <span class="close-btn">&times;</span>
-          <img src="" alt="Expanded Chart" />
+          <span class="close-btn" aria-label="Đóng">&times;</span>
+          <img src="" alt="Biểu đồ số lượng công việc còn lại mở rộng" />
         </div>
       </div>
-      
+
+      <!-- Bảng Hạn Cuối -->
       <div class="chart-container">
-        <div class="chart-container">
-    <div class="chart" onclick="expandChart(this)">
-        <h2>Task Deadlines</h2>
-        <table>
+        <div class="chart" onclick="expandChart(this)">
+          <table>
             <thead>
-                <tr>
-                    <th>Deadline Date</th>
-                    <th>Number of Tasks</th>
-                </tr>
+              <tr>
+                <th>Ngày Hạn cuối</th>
+                <th>Số Công Việc</th>
+              </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>2024-06-10</td>
-                    <td>5</td>
-                </tr>
-                <tr>
-                    <td>2024-06-11</td>
-                    <td>3</td>
-                </tr>
-                <!-- Add more rows dynamically based on task deadlines -->
+              <tr>
+                <td>2024-06-10</td>
+                <td>5</td>
+              </tr>
+              <tr>
+                <td>2024-06-11</td>
+                <td>3</td>
+              </tr>
             </tbody>
-        </table>
-        <p>
-            This table shows the distribution of task deadlines over time.
-        </p>
+          </table>
+          <p>Bảng này thể hiện số lượng công việc theo từng ngày hạn cuối.</p>
+        </div>
+        <div class="expanded-chart" onclick="closeExpandedChart(this)">
+          <span class="close-btn" aria-label="Đóng">&times;</span>
+          <img src="" alt="Bảng mở rộng" />
+        </div>
+      </div>
+
+      <!-- Công Việc Đã Hoàn Thành -->
+      <div class="chart-container">
+        <div class="chart" onclick="expandChart(this)">
+          <h2>Công Việc Đã Hoàn Thành Theo Thời Gian</h2>
+          <img src="/static/CHARTS/completed_tasks_over_time.png" alt="Biểu đồ công việc hoàn thành theo thời gian" />
+          <p>Biểu đồ hiển thị xu hướng hoàn thành công việc theo thời gian.</p>
+        </div>
+        <div class="expanded-chart" onclick="closeExpandedChart(this)">
+          <span class="close-btn" aria-label="Đóng">&times;</span>
+          <img src="" alt="Biểu đồ công việc hoàn thành theo thời gian mở rộng" />
+        </div>
+      </div>
+
+      <!-- Hiệu Suất Nhân Viên -->
+      <div class="chart-container">
+        <div class="chart" onclick="expandChart(this)">
+          <h2>Hiệu Suất Nhân Viên</h2>
+          <img src="/static/CHARTS/employee_performance.png" alt="Biểu đồ hiệu suất nhân viên" />
+          <p>Biểu đồ hiển thị số công việc đã hoàn thành của từng nhân viên.</p>
+        </div>
+        <div class="expanded-chart" onclick="closeExpandedChart(this)">
+          <span class="close-btn" aria-label="Đóng">&times;</span>
+          <img src="" alt="Biểu đồ hiệu suất nhân viên mở rộng" />
+        </div>
+      </div>
+
+      <!-- Đám Mây Từ Mô Tả Công Việc -->
+      <div class="chart-container">
+        <div class="chart" onclick="expandChart(this)">
+          <h2>Đám Mây Từ Mô Tả Công Việc</h2>
+          <img src="/static/CHARTS/task_description_wordcloud.png" alt="Word Cloud công việc" />
+          <p>Đám mây từ thể hiện tần suất các từ xuất hiện trong mô tả công việc.</p>
+        </div>
+        <div class="expanded-chart" onclick="closeExpandedChart(this)">
+          <span class="close-btn" aria-label="Đóng">&times;</span>
+          <img src="" alt="Word Cloud công việc mở rộng" />
+        </div>
+      </div>
+
+      <!-- Completion Rate -->
+      <div class="chart-container">
+        <div class="chart" onclick="expandChart(this)">
+          <h2>Tỷ Lệ Hoàn Thành Theo Nhân Viên</h2>
+          <img src="/static/CHARTS/completion_rate_by_employee.png" alt="Biểu đồ tỷ lệ hoàn thành theo nhân viên" />
+          <p>Biểu đồ thể hiện tỷ lệ hoàn thành công việc của từng nhân viên.</p>
+        </div>
+        <div class="expanded-chart" onclick="closeExpandedChart(this)">
+          <span class="close-btn" aria-label="Đóng">&times;</span>
+          <img src="" alt="Biểu đồ tỷ lệ hoàn thành theo nhân viên mở rộng" />
+        </div>
+      </div>
+
+      <!-- Task Distribution By Category -->
+      <div class="chart-container">
+        <div class="chart" onclick="expandChart(this)">
+          <h2>Phân Bổ Công Việc Theo Danh Mục</h2>
+          <img src="/static/CHARTS/task_distribution_by_category.png" alt="Phân bổ công việc theo danh mục" />
+          <p>Biểu đồ hiển thị sự phân chia công việc theo từng danh mục.</p>
+        </div>
+        <div class="expanded-chart" onclick="closeExpandedChart(this)">
+          <span class="close-btn" aria-label="Đóng">&times;</span>
+          <img src="" alt="Biểu đồ phân bổ công việc theo danh mục mở rộng" />
+        </div>
+      </div>
+
+      <!-- Task Distribution By Priority -->
+      <div class="chart-container">
+        <div class="chart" onclick="expandChart(this)">
+          <h2>Phân Bổ Công Việc Theo Mức Ưu Tiên</h2>
+          <img src="/static/CHARTS/task_distribution_by_priority.png" alt="Biểu đồ phân bổ công việc theo mức ưu tiên" />
+          <p>Biểu đồ thể hiện sự phân chia công việc theo mức độ ưu tiên.</p>
+        </div>
+        <div class="expanded-chart" onclick="closeExpandedChart(this)">
+          <span class="close-btn" aria-label="Đóng">&times;</span>
+          <img src="" alt="Biểu đồ phân bổ công việc theo mức ưu tiên mở rộng" />
+        </div>
+      </div>
     </div>
-    <div class="expanded-chart" onclick="closeExpandedChart(this)">
-        <span class="close-btn">&times;</span>
-        <img src="" alt="Expanded Chart" />
-    </div>
-</div>
 
-      </div>
-
-      <div class="chart-container">
-        <div class="chart" onclick="expandChart(this)">
-          <h2>Completed Tasks Over Time</h2>
-          <img
-            src="/static/CHARTS/completed_tasks_over_time.png"
-            alt="Completed Tasks Over Time Chart"
-          />
-          <p>This chart illustrates the trend of completed tasks over time.</p>
-        </div>
-        <div class="expanded-chart" onclick="closeExpandedChart(this)">
-          <span class="close-btn">&times;</span>
-          <img src="" alt="Expanded Chart" />
-        </div>
-      </div>
-      
-      <div class="chart-container">
-        <div class="chart" onclick="expandChart(this)">
-          <h2>Employee Performance</h2>
-          <img
-            src="/static/CHARTS/employee_performance.png"
-            alt="Employee Performance Chart"
-          />
-          <p>
-            This chart displays the number of completed tasks by each employee.
-          </p>
-        </div>
-        <div class="expanded-chart" onclick="closeExpandedChart(this)">
-          <span class="close-btn">&times;</span>
-          <img src="" alt="Expanded Chart" />
-        </div>
-      </div>
-      
-      <div class="chart-container">
-        <div class="chart" onclick="expandChart(this)">
-          <h2>Task Description Word Cloud</h2>
-          <img
-            src="/static/CHARTS/task_description_wordcloud.png"
-            alt="Task Description Word Cloud"
-          />
-          <p>
-            This word cloud represents the frequency of words in task
-            descriptions.
-          </p>
-        </div>
-        <div class="expanded-chart" onclick="closeExpandedChart(this)">
-          <span class="close-btn">&times;</span>
-          <img src="" alt="Expanded Chart" />
-        </div>
-      </div>
-      
-      <div class="chart-container">
-        <div class="chart" onclick="expandChart(this)">
-          <h2>Task Completion Rate by Employee</h2>
-          <img
-            src="/static/CHARTS/completion_rate_by_employee.png"
-            alt="Task Completion Rate by Employee"
-          />
-          <p>
-            This chart illustrates the task completion rate for each employee.
-          </p>
-        </div>
-        <div class="expanded-chart" onclick="closeExpandedChart(this)">
-          <span class="close-btn">&times;</span>
-          <img src="" alt="Expanded Chart" />
-        </div>
-      </div>
-      
-      <div class="chart-container">
-        <div class="chart" onclick="expandChart(this)">
-          <h2>Task Distribution by Category</h2>
-          <img
-            src="/static/CHARTS/task_distribution_by_category.png"
-            alt="Task Distribution by Category"
-          />
-          <p>
-            This chart shows the distribution of tasks across different
-            categories.
-          </p>
-        </div>
-        <div class="expanded-chart" onclick="closeExpandedChart(this)">
-          <span class="close-btn">&times;</span>
-          <img src="" alt="Expanded Chart" />
-        </div>
-      </div>
-
-      <div class="chart-container">
-        <div class="chart" onclick="expandChart(this)">
-          <h2>Task Distribution by Priority</h2>
-          <img
-            src="/static/CHARTS/task_distribution_by_priority.png"
-            alt="Task Distribution by Priority"
-          />
-          <p>
-            This chart displays the distribution of tasks based on priority
-            levels.
-          </p>
-        </div>
-        <div class="expanded-chart" onclick="closeExpandedChart(this)">
-          <span class="close-btn">&times;</span>
-          <img src="" alt="Expanded Chart" />
-        </div>
-      </div>
-
-      {% comment %}
-      <div class="chart">
-        <h2>Task Duration Distribution</h2>
-        <img
-          src="{% static 'task_duration_distribution.png' %}"
-          alt="Task Duration Distribution"
-        />
-        <p>This histogram visualizes the distribution of task durations.</p>
-      </div>
-      {% endcomment %}
-    </div>
     <script>
-      function expandChart(chart) {
-        var chartImgSrc = chart.querySelector("img").src;
-        var expandedChart = document.querySelector(".expanded-chart");
-        expandedChart.querySelector("img").src = chartImgSrc;
-        expandedChart.style.display = "flex";
+      function expandChart(chartElement) {
+        const expandedChart = chartElement.querySelector('.expanded-chart');
+        const imgElement = expandedChart.querySelector('img');
+        const imgSrc = chartElement.querySelector('img').src;
+        imgElement.src = imgSrc;
+        expandedChart.style.display = 'flex';
       }
 
-      function closeExpandedChart(expandedChart) {
-        expandedChart.style.display = "none";
+      function closeExpandedChart(expandedChartElement) {
+        expandedChartElement.style.display = 'none';
       }
     </script>
   </body>

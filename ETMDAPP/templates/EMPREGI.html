@@ -1,22 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Success</title>
+    <title>Thành Công</title>
     <script>
-        // Function to show the success message and redirect
+        // Hàm để hiển thị thông báo thành công và chuyển hướng
         function showSuccessAndRedirect() {
-            // Display the modal
+            // Hiển thị modal
             document.getElementById("successModal").style.display = "block";
-            // Redirect after 3 seconds
+            // Chuyển hướng sau 3 giây
             setTimeout(function(){
-                window.location.href = "{% url 'AdminDashboard' %}"; // Replace with your AdminDashboard URL
-            }, 3000); // 3000 milliseconds = 3 seconds
+                window.location.href = "{% url 'AdminDashboard' %}"; // Thay bằng URL trang AdminDashboard của bạn
+            }, 3000); // 3000 milliseconds = 3 giây
         }
     </script>
     <style>
-        /* CSS for modal */
+        /* CSS cho modal */
         .modal {
             display: none;
             position: fixed;
@@ -54,12 +54,12 @@
     </style>
 </head>
 <body onload="showSuccessAndRedirect()">
-    <!-- Success Modal -->
+    <!-- Modal thành công -->
     <div id="successModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="document.getElementById('successModal').style.display = 'none';">&times;</span>
-            <h2>Employee Created Successfully!</h2>
-            <p>Redirecting to Admin Dashboard...</p>
+            <h2>Nhân viên đã được tạo thành công!</h2>
+            <p>Đang chuyển hướng đến Bảng Điều Khiển Quản Trị...</p>
         </div>
     </div>
 </body>

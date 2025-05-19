@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Description</title>
+    <title>Mô tả Công Việc</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -57,20 +57,20 @@
     </style>
 </head>
 <body>
-    <h1>Tasks Description</h1>
+    <h1>Mô Tả Công Việc</h1>
     <div class="container">
         <div class="task-list">
             {% if tasks %}
-                <p>Number of tasks: {{ tasks|length }}</p>
+                <p>Số lượng công việc: {{ tasks|length }}</p>
                 {% for task in tasks %}
                     <div class="task-item">
-                        <p style="color:black;"><strong>Task:</strong> {{ task.title }}</p>
-                        <p style="color:black;"><strong>Description:</strong> {{ task.description }}</p>
-                        <p style="color:black;"><strong>Deadline:</strong> {{ task.deadline_date }} {{ task.deadline_time }}</p>
+                        <p style="color:black;"><strong>Công việc:</strong> {{ task.title }}</p>
+                        <p style="color:black;"><strong>Mô tả:</strong> {{ task.description }}</p>
+                        <p style="color:black;"><strong>Hạn cuối:</strong> {{ task.deadline_date }} {{ task.deadline_time }}</p>
                     </div>
                 {% endfor %}
             {% else %}
-                <p>No tasks found for this user.</p>
+                <p>Không có công việc nào cho người dùng này.</p>
             {% endif %}
         </div>
     </div>

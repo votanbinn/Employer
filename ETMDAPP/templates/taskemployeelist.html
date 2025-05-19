@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/css/taskemployeelist.css">
-    <title>Assigned Tasks</title>
+    <title>Công Việc Được Giao</title>
 </head>
 <style>
 .container {
@@ -29,25 +29,28 @@
 
 </style>
 <body>
-    <h1>Assigned Tasks</h1>
+    <h1>Công Việc Được Giao</h1>
 <div class="container">
+    <a href="{% url 'AdminDashboard' %}" class="back-link">
+        <i class="fas fa-arrow-left"></i> Quay lại bảng điều khiển
+    </a>
     <ul class="task-list">
         <!-- Inside your template -->
         {% for employee in employees %}
         <li>
             <h3>{{ employee.name }}</h3>
-            <p>Number of tasks: {{ employee.task_count }}</p>
+            <p>Số lượng công việc: {{ employee.task_count }}</p>
             <div class="task-details">
                 {% for task in employee.task_set.all %}
                 <form method="post" action="{% url 'mark_task_finished' task.id employee.email %}">
                     {% csrf_token %}
                     <!-- Pass the email as a hidden input field -->
                     <input type="hidden" name="email" value="{{ employee.email }}">
-                    <p><strong>Task:</strong> {{ task.title }}</p>
-                    <p><strong>Description:</strong> {{ task.description }}</p>
-                    <p><strong>Deadline:</strong> {{ task.deadline_date }} {{ task.deadline_time }}</p>
+                    <p><strong>Công việc:</strong> {{ task.title }}</p>
+                    <p><strong>Mô tả:</strong> {{ task.description }}</p>
+                    <p><strong>Hạn chót:</strong> {{ task.deadline_date }} {{ task.deadline_time }}</p>
                     <!-- Add a submit button -->
-                    <button type="submit">Finish Task</button>
+                    <button type="submit">Hoàn thành công việc</button>
                 </form>
                 {% endfor %}
             </div>

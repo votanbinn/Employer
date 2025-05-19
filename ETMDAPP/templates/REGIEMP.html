@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {% comment %} <link rel="stylesheet" href="/static/css/registeremp.css" /> {% endcomment %}
-    <title>Add Employee</title>
+    <title>Thêm Nhân Viên</title>
     <style>
-        /* CSS for form container */
         .container {
             display: flex;
             justify-content: center;
@@ -28,12 +26,12 @@
             margin-top: 0;
             font-size: 24px;
             text-align: center;
-            margin-bottom: 20px; /* Added margin */
+            margin-bottom: 20px;
         }
 
         .box form {
             display: grid;
-            grid-template-columns: repeat(4, 1fr); /* Arrange in four columns */
+            grid-template-columns: repeat(4, 1fr);
             gap: 20px;
         }
 
@@ -86,66 +84,79 @@
         .button-wrapper button[type="reset"]:hover {
             background-color: #aaaaaa;
         }
+
+        .error-message {
+            color: red;
+            text-align: center;
+            grid-column: 1 / -1;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="box">
-        <h1>Add Employee</h1> <!-- Moved the heading outside the form -->
-        <form action="" method="POST">
+        <h1>Thêm Nhân Viên</h1>
+
+        {% if error_message %}
+            <p class="error-message">{{ error_message }}</p>
+        {% endif %}
+        
+        {% if success_message %}
+            <p class="success-message">{{ success_message }}</p>
+        {% endif %}
+
+        <form action="" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            <label for="fname">Name</label>
+            
+            <label for="fname">Họ và tên</label>
             <input type="text" id="fname" name="firstname" required>
 
-            <label for="dname">Department</label>
+            <label for="dname">Phòng ban</label>
             <select id="dname" name="department">
                 {% for department in departments %}
                 <option value="{{ department.name }}">{{ department.name }}</option>
                 {% endfor %}
             </select>
 
-
-            <label for="id">Employee ID</label>
+            <label for="id">Mã nhân viên</label>
             <input type="text" id="id" name="id" required>
 
-            <label for="address">Address</label>
+            <label for="address">Địa chỉ</label>
             <input type="text" id="address" name="address" required>
 
-            <label for="number">Contact Number</label>
+            <label for="number">Số điện thoại</label>
             <input type="text" id="number" name="number" pattern="(91||+91)?[0-9]{10}$" required>
 
-            <label for="dest">Destination</label>
+            <label for="dest">Nơi công tác</label>
             <input type="text" id="dest" name="dest">
 
-            <label for="dob">Date of Birth</label>
+            <label for="dob">Ngày sinh</label>
             <input type="date" id="dob" name="dob" required>
 
-            <label for="doj">Date of Joining</label>
+            <label for="doj">Ngày vào làm</label>
             <input type="date" id="doj" name="doj" required>
 
             <label for="email">Email</label>
             <input type="email" id="email" name="email" required>
-            
-            <label for="newemail">New Email</label>
-            <input type="email" id="newemail" name="newemail" required>
 
-            <label for="pass">Password</label>
-            <input type="password" id="pass" name="pass" required>
-
-            <label for="des">Designation</label>
+            <label for="des">Chức vụ</label>
             <input type="text" id="des" name="des">
 
-            <label for="desc">Description (if any)</label>
+            <label for="desc">Mô tả (nếu có)</label>
             <input type="text" id="desc" name="desc">
 
-            <label for="pictureInput">Choose Picture</label>
+            <label for="pictureInput">Chọn ảnh</label>
             <input type="file" id="pictureInput" name="pictureInput" accept="image/*">
 
             <div class="button-wrapper">
-                <button type="reset">Reset</button>
-                <button type="submit">Submit</button>
+                <button type="reset">Đặt lại</button>
+                <button type="submit">Xác nhận</button>
             </div>
+            <a href="{% url 'AdminDashboard' %}" class="back-link">
+                <i class="fas fa-arrow-left"></i> Quay lại bảng điều khiển
+            </a>
         </form>
     </div>
 </div>

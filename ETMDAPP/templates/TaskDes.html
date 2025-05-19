@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% comment %} <link rel="stylesheet" href="/static/css/taskemployeelist.css"> {% endcomment %}
-    <title>Task Description</title>
+    <title>Mô Tả Công Việc</title>
 </head>
 <style>
 .container {
@@ -116,25 +116,29 @@ hr#two {
             color: #666;
         }
         
+    
 
 </style>
 <body>
-    <h1>Tasks Description</h1>
+    <h1>Mô Tả Công Việc</h1>
 <div class="container">
+    <a href="{% url 'AdminDashboard' %}" class="back-link">
+        <i class="fas fa-arrow-left"></i> Quay lại bảng điều khiển
+    </a>
     <ul class="task-list" style="display:block; width:100%;">
         <!-- Inside your template -->
         {% for employee in employees %}
         <li style="display:inline-block;">
             <h2>{{ employee.name }}</h2>
-            <p>Number of tasks: {{ employee.task_count }}</p>
+            <p>Số lượng công việc: {{ employee.task_count }}</p>
             <div class="task-details">
                 {% for task in employee.task_set.all %}
                     {% csrf_token %}
                     <!-- Pass the email as a hidden input field -->
                     <input type="hidden" name="email" value="{{ employee.email }}">
-                    <p style="color:black;"><strong>Task:</strong> {{ task.title }}</p>
-                    <p  style="color:black;"><strong>Description:</strong> {{ task.description }}</p>
-                    <p  style="color:black;"><strong>Deadline:</strong> {{ task.deadline_date }} {{ task.deadline_time }}</p>
+                    <p style="color:black;"><strong>Công việc:</strong> {{ task.title }}</p>
+                    <p  style="color:black;"><strong>Mô tả:</strong> {{ task.description }}</p>
+                    <p  style="color:black;"><strong>Hạn chót:</strong> {{ task.deadline_date }} {{ task.deadline_time }}</p>
                     <hr id="two" data-symbol="✈">
                 {% endfor %}
             </div>

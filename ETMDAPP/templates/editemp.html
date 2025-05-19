@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Employee</title>
+    <title>Chỉnh sửa nhân viên</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
     <style>
 body {
     font-family: 'Arial', sans-serif;
@@ -64,7 +63,8 @@ form label {
 
 form input[type="text"],
 form input[type="email"],
-form input[type="date"] {
+form input[type="date"],
+form input[type="file"] {
     width: 100%;
     padding: 10px;
     border-radius: 5px;
@@ -72,14 +72,22 @@ form input[type="date"] {
     box-sizing: border-box;
     transition: border-color 0.3s ease;
     margin-bottom: 10px;
-    background-color: #f2f2f2; /* Light gray background color */
+    background-color: #f2f2f2;
 }
 
 form input[type="text"]:focus,
 form input[type="email"]:focus,
-form input[type="date"]:focus {
+form input[type="date"]:focus,
+form input[type="file"]:focus {
     outline: none;
     border-color: #007bff;
+}
+
+img.current-picture {
+    max-width: 150px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border: 2px solid #ddd;
 }
 
 .button-wrapper {
@@ -120,19 +128,25 @@ form input[type="date"]:focus {
         padding: 20px;
     }
 }
-
     </style>
 </head>
 <body>
     <div class="container">
         <div class="box">
-            <h1>Edit Employee</h1>
+            <button type="button" onclick="window.history.back()">Quay lại</button>
+            <h1>Chỉnh sửa nhân viên</h1>
             <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ form.as_p }}
+
+                {% if form.instance.picture %}
+                    <p>Ảnh hiện tại:</p>
+                    <img src="{{ form.instance.picture.url }}" alt="Ảnh nhân viên" class="current-picture">
+                {% endif %}
+
                 <div class="button-wrapper">
-                    <button type="reset"><i class="fas fa-undo"></i> Reset</button>
-                    <button type="submit"><i class="fas fa-save"></i> Submit</button>
+                    <button type="reset"><i class="fas fa-undo"></i> Đặt lại</button>
+                    <button type="submit"><i class="fas fa-save"></i> Lưu</button>
                 </div>
             </form>
         </div>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,30 +8,30 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
     />
-     <link
+    <link
       rel="shortcut icon"
       href="/static/IMAGES/login.png"
       type="image/x-icon"
     />
-    <title>Admin Login</title>
+    <title>Đăng Nhập Quản Trị Viên</title>
   </head>
   <body>
     <div class="container" id="container">
       <div class="form-container sign-in-container">
-        <!-- Sign In Form -->
+        <!-- Mẫu Đăng Nhập -->
         <form action="" method="POST">
          {% csrf_token %}
-         <h2>Admin Login</h2>
+         <h2>Đăng Nhập Quản Trị Viên</h2>
           <input type="email" name="email" placeholder="Email" />
-          <input type="password" name="password" placeholder="Password" />
-          <button>Log In</button>
+          <input type="password" name="password" placeholder="Mật khẩu" />
+          <button>Đăng Nhập</button>
         </form>
       </div>
       <div class="overlay-container">
         <div class="overlay">
           <div class="overlay-panel overlay-right">
-            <h2>Admin</h2>
-            <p>Only Admin Will login kindly make sure dont't try to login with employee account !</p>
+            <h2>Quản Trị Viên</h2>
+            <p>Chỉ quản trị viên mới có thể đăng nhập, vui lòng đảm bảo không đăng nhập bằng tài khoản nhân viên!</p>
           </div>
         </div>
       </div>
@@ -39,7 +39,7 @@
 
     <footer>
       <p>
-        &copy; Created with  by Gajal Rathore, Kushi Verma, Darsha Patidar
+        &copy; Tạo bởi Võ Tấn Bin
       </p>
     </footer>
   </body>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách công việc đã hoàn thành</title>
+    <link rel="stylesheet" href="/static/css/admindashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f5f6fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            margin-left: 270px;
+            padding: 20px;
+        }
+
+        .heading {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .task-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s;
+        }
+
+        .task-card:hover {
+            transform: scale(1.01);
+        }
+
+        .task-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2f3640;
+            margin-bottom: 8px;
+        }
+
+        .task-info {
+            margin: 6px 0;
+            color: #555;
+        }
+
+        .task-icon {
+            color: #4cd137;
+            margin-right: 8px;
+        }
+
+        .no-tasks {
+            font-style: italic;
+            color: gray;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <a href="{% url 'AdminDashboard' %}" class="back-link">
+        <i class="fas fa-arrow-left"></i> Quay lại bảng điều khiển
+    </a>
+    <h2 class="heading"><i class="fa-solid fa-check-double"></i> Công việc đã hoàn thành</h2>
+
+    {% if finished_tasks %}
+        {% for task in finished_tasks %}
+            <div class="task-card">
+                <div class="task-title">
+                    <i class="fa-solid fa-tasks task-icon"></i> {{ task.title }}
+                </div>
+                <div class="task-info"><strong>Mô tả:</strong> {{ task.description }}</div>
+                <div class="task-info"><strong>Deadline:</strong> {{ task.deadline_date }} lúc {{ task.deadline_time }}</div>
+                <div class="task-info"><strong>Email:</strong> {{ task.email }}</div>
+                <div class="task-info"><strong>Trạng thái:</strong> <span style="color:green;">Đã hoàn thành</span></div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="no-tasks">Không có công việc nào đã hoàn thành.</div>
+    {% endif %}
+</div>
+
+</body>
+</html>

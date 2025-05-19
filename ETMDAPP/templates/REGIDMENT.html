@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Add Department</title>
+  <title>Thêm Phòng Ban</title>
 </head>
 <style>
 .container {
@@ -145,7 +145,7 @@ button:hover {
 <body>
 <div class="container">
   <div class="box">
-    <h1>Add Department</h1>
+    <h1>Thêm Phòng Ban</h1>
     <form action="" method="POST">
       {% csrf_token %}
       <div class="form-columns">
@@ -165,14 +165,15 @@ button:hover {
         </div>
       </div>
       <div class="button-wrapper">
-        <button type="reset">Reset</button>
-        <button type="submit">Submit</button>
+        <button type="reset">Đặt lại</button>
+        <button type="submit">Gửi</button>
       </div>
+      <a href="{% url 'AdminDashboard' %}" class="back-link">
+        <i class="fas fa-arrow-left"></i> Quay lại bảng điều khiển
+      </a>
     </form>
   </div>
 </div>
-
-
 
 </body>
 </html>

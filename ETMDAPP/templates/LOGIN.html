@@ -14,7 +14,7 @@
       href="/static/IMAGES/login.png"
       type="image/x-icon"
     />
-    <title>Login Form</title>
+    <title>Đăng Nhập</title>
   </head>
   <body>
     <div class="container" id="container">
@@ -22,38 +22,37 @@
         <!-- Sign Up Form -->
         <form  method="POST">
         {% csrf_token %}
-          <h1>Create Account</h1>
-          <span>or use your email for registration</span>
+          <h1>Tạo tài khoản</h1>
+          <span>hoặc sử dụng email để đăng ký</span>
           <input type="text" placeholder="Name" name="Name" />
           <input type="email" placeholder="Email" name="Email" />
           <input type="password" placeholder="Password" name="Password" />
-          <button>Sign Up</button>
+          <button>Đăng ký</button>
         </form>
       </div>
       <div class="form-container sign-in-container">
         <!-- Sign In Form -->
         <form  method="POST">
          {% csrf_token %}
-          <h1>Sign in</h1>
-          <span>or use your account</span>
+          <h1>Đăng nhập</h1>
           <input type="email" placeholder="Email" name="LOGINEmail" />
           <input type="password" placeholder="Password" name="LOGINPassword" />
-          <button type="submit">Sign In</button>
+          <button type="submit">Đăng nhập</button>
       </form>
       </div>
       <div class="overlay-container">
         <div class="overlay">
           <div class="overlay-panel overlay-left">
-            <h2>Welcome Back!</h2>
+            <h2>Chào mừng trở lại!</h2>
             <p>
-              To keep connected with us please login with your personal info
+              Để tiếp tục kết nối với chúng tôi, vui lòng đăng nhập bằng thông tin cá nhân của bạn
             </p>
             <button class="ghost" id="signIn">Sign In</button>
           </div>
           <div class="overlay-panel overlay-right">
-            <h2>Hello, Friend!</h2>
-            <p>Enter your personal details and start journey with us</p>
-            <button class="ghost" id="signUp">Sign Up</button>
+            <h2>Xin chào bạn của tôi</h2>
+            <p>Nhập thông tin cá nhân để bắt đầu hành trình cùng chúng tôi</p>
+            <button class="ghost" id="signUp">Đăng ký</button>
           </div>
         </div>
       </div>
@@ -61,7 +60,7 @@
 
     <footer>
       <p>
-        &copy; Created with  by Gajal Rathore, Khushi Verma, Darshana Patidar
+        &copy; Được tạo bởi Võ Tấn Bin
       </p>
     </footer>
 
