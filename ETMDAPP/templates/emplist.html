@@ -1,105 +1,177 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Danh Sách Nhân Viên</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Bao gồm CSS Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
     <style>
+        /* Reset một số mặc định */
+        * {
+            box-sizing: border-box;
+        }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
             background-image: url('https://source.unsplash.com/1600x900/?employee');
-            background-size:cover;
+            background-size: cover;
             background-position: center;
-            background-repeat:no-repeat;
-            color: black; /* Thiết lập màu chữ là đen */
+            background-repeat: no-repeat;
+            color: #222;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            background-color: rgb(21, 85, 101);
         }
         h1 {
-            text-align: center;
-            margin-bottom: 20px;
             font-family: 'Poppins', sans-serif;
-            font-size: 36px;
+            font-size: 3rem;
             color: #fff;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 3px 8px rgba(0,0,0,0.6);
+            margin-bottom: 30px;
+            text-align: center;
         }
         .container {
-            width: 80%; /* Thiết lập độ rộng của container là 80% */
-            margin: 0 auto; /* Canh giữa container */
-            background-color: rgba(255, 255, 255, 0.9); /* Thiết lập màu nền với độ trong suốt */
-            padding: 20px; /* Thêm khoảng cách xung quanh */
-            border-radius: 10px; /* Thêm bo góc cho các cạnh */
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3); /* Thêm bóng đổ cho chiều sâu */
-        }
-        .table-container {
-            overflow-x: auto; /* Cho phép cuộn ngang khi màn hình nhỏ */
-        }
-        table {
             width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #dddddd;
-        }
-        th {
-            background-color: #f2f2f2;
-            font-weight: 600;
-            color: #333;
-        }
-        td {
-            font-weight: 400;
-            color: #555;
-        }
-        td img {
-            max-width: 50px;
-            height: auto;
-            display: block;
-            margin: auto;
+            max-width: 1200px;
+            background-color:rgba(255, 255, 255, 0.93);
+            padding: 30px 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
         }
         .search-container {
             display: flex;
             justify-content: center;
-            align-items: center;
-            margin-bottom: 20px;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
         }
         .search-container input[type=text] {
-            width: 300px;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            background-color: rgba(255, 255, 255, 0.8);
-            margin-right: 10px;
-            transition: background-color 0.3s, box-shadow 0.3s;
+            flex: 1 1 250px;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
         }
         .search-container input[type=text]:focus {
             outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 8px rgb(21, 85, 101);
             background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         }
         .search-container button {
-            padding: 10px 20px;
+            padding: 12px 25px;
             border: none;
-            border-radius: 5px;
-            background-color: #007bff;
-            color: #ffffff;
+            border-radius: 8px;
+            background-color:  rgb(21, 85, 101);
+            color: white;
+            font-size: 1rem;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s ease;
+            flex-shrink: 0;
         }
         .search-container button:hover {
-            background-color: #0056b3;
+            background-color:  rgb(21, 85, 101);
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            font-weight: 600;
+            color:  rgb(21, 85, 101);
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: color 0.3s;
+        }
+        .back-link i {
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+        .back-link:hover {
+            color:  rgb(21, 85, 101);
+        }
+        .table-container {
+            overflow-x: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.95rem;
+            min-width: 1100px;
+        }
+        thead {
+            background-color:  rgb(21, 85, 101);
+            color: white;
+            box-shadow: inset 0 -3px 6px rgba(0,0,0,0.2);
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            vertical-align: middle;
+        }
+        th:first-child, td:first-child {
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+        }
+        th:last-child, td:last-child {
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+            text-align: center;
+            white-space: nowrap;
+        }
+        tbody tr:hover {
+            background-color: #f1f9ff;
+        }
+        td {
+            color: #444;
+        }
+        td img {
+            max-width: 50px;
+            height: auto;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            display: block;
+            margin: 0 auto;
         }
         .edit-icon, .delete-icon {
             color: #007bff;
-            margin-right: 10px;
+            margin: 0 5px;
             cursor: pointer;
-            transition: color 0.3s;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+            vertical-align: middle;
+        }
+        .edit-icon:hover {
+            color: #0056b3;
         }
         .delete-icon:hover {
-            color: red;
+            color: #d9534f;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+            .search-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .search-container input[type=text], .search-container button {
+                width: 100%;
+                margin: 5px 0;
+            }
+            table {
+                min-width: 100%;
+            }
         }
     </style>
 </head>
@@ -109,45 +181,17 @@
         <div class="search-container">
             <form method="GET" action="{% url 'search_employee' %}">
                 {% csrf_token %}
-                <input type="text" name="email" value="{{ query_email }}" placeholder="Tìm kiếm theo Email">
-                <input type="text" name="emp_id" value="{{ query_emp_id }}" placeholder="Tìm kiếm theo Mã Nhân Viên">
-                <button onclick="searchEmployees()">Tìm Kiếm</button>
+                <input type="text" id="email" name="email" value="{{ query_email }}" placeholder="Tìm kiếm theo Email" />
+                <input type="text" id="emp_id" name="emp_id" value="{{ query_emp_id }}" placeholder="Tìm kiếm theo Mã Nhân Viên" />
+                <button type="submit" id="searchButton">Tìm Kiếm</button>
             </form>
         </div>
-        
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script>
-            $(document).ready(function() {
-                function searchEmployees() {
-                    var email = $('#email').val();
-                    var empId = $('#emp_id').val();
 
-                    $.ajax({
-                        url: '{% url "search_employee" %}',
-                        method: 'GET',
-                        data: {
-                            email: email,
-                            emp_id: empId
-                        },
-                        success: function(response) {
-                            $('#employeeTableContainer').html(response);
-                        },
-                        error: function(xhr, status, error) {
-                            console.error(xhr.responseText);
-                        }
-                    });
-                }
-
-                $('#searchButton').click(function() {
-                    searchEmployees();
-                });
-            });
-        </script>
         <a href="{% url 'AdminDashboard' %}" class="back-link">
             <i class="fas fa-arrow-left"></i> Quay lại bảng điều khiển
         </a>
-        <div class="table-container">
-            
+
+        <div class="table-container" id="employeeTableContainer">
             <table>
                 <thead>
                     <tr>
@@ -168,41 +212,34 @@
                 </thead>
                 <tbody>
                     {% for employee in employees %}
-                        <tr>
-                            <td>{{ employee.name }}</td>
-                            <td>{{ employee.email }}</td>
-                            <td>{{ employee.department }}</td>
-                            <td>{{ employee.employee_id }}</td>
-                            <td>{{ employee.address }}</td>
-                            <td>{{ employee.contact_number }}</td>
-                            <td>{{ employee.destination }}</td>
-                            <td>{{ employee.date_of_birth }}</td>
-                            <td>{{ employee.date_of_joining }}</td>
-                            <td>{{ employee.designation }}</td>
-                            <td>{{ employee.description }}</td>
-                            <td>
-                                {% if employee.picture %}
-                                    <img src="{{ employee.picture.url }}" alt="Ảnh Nhân Viên">
-                                {% else %}
-                                    <span>Không Có Ảnh</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <a href="{% url 'edit_employee' employee.pk %}" class="edit-icon"><i class="fas fa-edit"></i></a> <!-- Icon Sửa -->
-                                <a href="{% url 'delete_employee' employee.pk %}" class="delete-icon"><i class="fas fa-trash-alt"></i></a> <!-- Icon Xóa -->
-                            </td>
+                    <tr>
+                        <td>{{ employee.name }}</td>
+                        <td>{{ employee.email }}</td>
+                        <td>{{ employee.department }}</td>
+                        <td>{{ employee.employee_id }}</td>
+                        <td>{{ employee.address }}</td>
+                        <td>{{ employee.contact_number }}</td>
+                        <td>{{ employee.destination }}</td>
+                        <td>{{ employee.date_of_birth }}</td>
+                        <td>{{ employee.date_of_joining }}</td>
+                        <td>{{ employee.designation }}</td>
+                        <td>{{ employee.description }}</td>
+                        <td>
+                            {% if employee.picture %}
+                                <img src="{{ employee.picture.url }}" alt="Ảnh Nhân Viên" />
+                            {% else %}
+                                <span>Không Có Ảnh</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'edit_employee' employee.pk %}" class="edit-icon" title="Sửa"><i class="fas fa-edit"></i></a>
+                            <a href="{% url 'delete_employee' employee.pk %}" class="delete-icon" title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa {{ employee.name }}?')"><i class="fas fa-trash-alt"></i></a>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
-    <script>
-        function confirmDelete(name, url) {
-            if (confirm(`Bạn có chắc chắn muốn xóa ${name}?`)) {
-                window.location.href = url;
-            }
-        }
-    </script>
 </body>
 </html>

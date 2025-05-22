@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,9 +19,10 @@
   
     <div class="sidebar close">
       <div class="logo">
-        <i class="fab fa-trade-federation"></i>
+        <img src="{% static 'IMAGES/Logo.jpg' %}" alt="Logo" class="logo-img">
         <span class="logo-name">Hệ Thống</span>
       </div>
+
 
       <ul class="nav-list">
         <li>
@@ -94,7 +96,7 @@
             <li><a href={% url "employee_list" %}>Quản lý nhân viên</a></li>
             <li><a href={% url "Dlist" %}>Quản lý phòng ban</a></li>
             <li><a href={% url "finished_tasks" %}>Công việc đã hoàn thành</a></li>
-            <li><a href={% url "Chamcong" %}>chấm công</a></li>
+            <li><a href={% url "Chamcong" %}>Chấm công</a></li>
           </ul>
         </li>
 

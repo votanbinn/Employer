@@ -97,10 +97,8 @@ input {
     position: relative;
     overflow: hidden;
     width: auto;
-    /* Set container width to auto */
     max-width: 100%;
     min-height: auto;
-    /* Remove fixed height */
 }
 
 .form-container {
@@ -113,7 +111,6 @@ input {
 .sign-in-container {
     left: 0;
     width: 100%;
-    /* Adjust width for responsiveness */
     z-index: 2;
 }
 

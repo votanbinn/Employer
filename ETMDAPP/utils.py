@@ -29,7 +29,7 @@ def send_email_to_employee(email, new_email):
     # Extract email settings from Django settings
     from_email = settings.EMAIL_HOST_USER
 
-    # Construct email subject and message
+    # Construct email subject and message   
     subject = "Welcome to ETMD Pvt Ltd."
     message = f"""
     Dear {email},

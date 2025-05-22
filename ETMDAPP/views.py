@@ -707,48 +707,85 @@ import pandas as pd
 from django.shortcuts import render
 import requests
 from io import BytesIO
+import datetime
 
 def timesheet_view(request):
-    import requests
-    import pandas as pd
-    from io import BytesIO
-    import datetime
-
     url = 'https://docs.google.com/spreadsheets/d/1hRBixIYOX5_oaXOawR16OFmsI1UBIYNqgs30GoPJja0/export?format=xlsx'
     response = requests.get(url)
+
     if response.status_code != 200:
         return render(request, 'Chamcong.html', {'error': 'Không tải được file Excel từ Google Sheets'})
 
     file_bytes = BytesIO(response.content)
+
     try:
         xls = pd.ExcelFile(file_bytes)
         sheet_names = xls.sheet_names
 
-        selected_sheet = request.GET.get('sheet', sheet_names[0])
-        selected_sheet = selected_sheet.strip()
+        selected_sheet = request.GET.get('sheet', sheet_names[0]).strip()
         match_sheets = [s for s in sheet_names if s.strip().lower() == selected_sheet.lower()]
-        if match_sheets:
-            selected_sheet = match_sheets[0]
+        selected_sheet = match_sheets[0] if match_sheets else sheet_names[0]
+
+        def clean_cell(cell):
+            try:
+                dt = pd.to_datetime(cell, errors='raise')
+                return dt.strftime('%d/%m/%Y')
+            except:
+                pass
+            if isinstance(cell, float) and cell.is_integer():
+                return str(int(cell))
+            return str(cell) if cell is not None else ''
+
+        cleaned_sheets = {}
+
+        for sheet in sheet_names:
+            try:
+                df_raw = pd.read_excel(xls, sheet_name=sheet, header=None)
+
+                header_candidate = [clean_cell(cell) for cell in df_raw.iloc[1]]
+
+                header_row = pd.Series(header_candidate).fillna('').astype(str)
+                for i in range(1, len(header_row)):
+                    if header_row[i] in header_row[:i].values and header_row[i] != '':
+                        count = sum(header_row[:i] == header_row[i])
+                        header_row[i] = f"{header_row[i]}_{count+1}"
+
+                df = df_raw.iloc[3:].copy()
+                df.columns = header_row
+                df = df.loc[:, ~df.columns.str.contains('^Unnamed', na=False)]
+                df.dropna(axis=1, how='all', inplace=True)
+                df = df.loc[:, df.columns.str.strip() != '']
+                df = df.fillna('')
+
+                if df.columns[0] != 'STT':
+                    df.rename(columns={df.columns[0]: 'STT'}, inplace=True)
+
+                if 'STT' in df.columns:
+                    df['STT'] = df['STT'].apply(
+                        lambda x: str(int(float(x))) if str(x).replace('.', '', 1).isdigit() and float(x).is_integer() else x
+                    )
+
+                columns_to_exclude = ['Nửa ca', 'Vắng mặt', 'Đến muộn', 'Off', 'Vắng mặt có lý do', 'Vắng mặt không lý do']
+                df = df[[col for col in df.columns if col.strip() not in columns_to_exclude]]
+
+                cleaned_sheets[sheet] = df
+
+            except Exception as e:
+                continue
+
+        if selected_sheet in cleaned_sheets:
+            df_to_display = cleaned_sheets[selected_sheet]
+            table_html = df_to_display.to_html(classes='table table-bordered table-striped', index=False, border=0)
         else:
-            selected_sheet = sheet_names[0]
-
-        df = pd.read_excel(xls, sheet_name=selected_sheet, header=2)
-        df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
-        df.dropna(axis=1, how='all', inplace=True)
-        if df.columns[0] != 'STT':
-            df.rename(columns={df.columns[0]: 'STT'}, inplace=True)
-        df = df.fillna('')
-
-        table_html = df.to_html(classes='table table-bordered table-striped', index=False)
-
-        report_date = datetime.datetime.now().strftime('%d/%m/%Y')
+            table_html = "<p>Không có dữ liệu hợp lệ để hiển thị</p>"
 
         context = {
             'sheet_names': sheet_names,
             'selected_sheet': selected_sheet,
             'table': table_html,
-            'report_date': report_date,
+            'report_date': datetime.datetime.now().strftime('%d/%m/%Y'),
         }
         return render(request, 'Chamcong.html', context)
+
     except Exception as e:
         return render(request, 'Chamcong.html', {'error': f'Lỗi khi đọc file Excel: {str(e)}'})

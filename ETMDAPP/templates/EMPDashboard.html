@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -40,7 +41,7 @@
 <section>
     <div class="sidebar close">
         <div class="logo">
-            <img class="logo-name" src="/static/IMAGES/mono.jpg" style="margin:20px;height:40px;border-radius:20px;">
+            <img src="{% static 'IMAGES/Logo.jpg' %}" alt="Logo" class="logo-img">
         </div>
 
         <ul class="nav-list">

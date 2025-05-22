@@ -1,165 +1,231 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Thêm Nhân Viên</title>
     <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: rgb(21, 85, 101);
+        }
+
         .container {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            background-color: #f0f0f0;
+            padding: 40px 20px;
         }
 
         .box {
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            width: 90%;
-            max-width: 600px;
+            background-color: rgba(255, 255, 255, 0.93);
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 700px;
         }
 
         .box h1 {
-            margin-top: 0;
-            font-size: 24px;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            color: #114b29;
         }
 
-        .box form {
+        form {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px 25px;
         }
 
-        .box form label {
-            font-weight: bold;
+        label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: block;
         }
 
-        .box form input[type="text"],
-        .box form input[type="email"],
-        .box form input[type="password"],
-        .box form input[type="date"],
-        .box form select {
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="date"],
+        input[type="file"],
+        select {
             width: 100%;
-            padding: 10px;
+            padding: 8px 12px;
             border: 1px solid #ccc;
-            border-radius: 5px;
+            border-radius: 6px;
+            font-size: 14px;
             box-sizing: border-box;
+            transition: 0.3s;
         }
 
-        .box form input[type="file"] {
-            width: calc(100% - 10px);
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #42b983;
+            box-shadow: 0 0 0 2px rgba(66, 185, 131, 0.2);
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
         }
 
         .button-wrapper {
             grid-column: 1 / -1;
             display: flex;
             justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
         }
 
         .button-wrapper button {
             padding: 10px 20px;
+            font-size: 14px;
             border: none;
-            border-radius: 5px;
-            background-color: #007bff;
-            color: #ffffff;
+            border-radius: 6px;
             cursor: pointer;
             transition: background-color 0.3s;
         }
 
-        .button-wrapper button:hover {
+        button[type="submit"] {
+            background-color: #007bff;
+            color: white;
+        }
+
+        button[type="submit"]:hover {
             background-color: #0056b3;
         }
 
-        .button-wrapper button[type="reset"] {
-            background-color: #cccccc;
-            color: #000000;
-            margin-right: 10px;
+        button[type="reset"] {
+            background-color: #ccc;
+            color: #000;
         }
 
-        .button-wrapper button[type="reset"]:hover {
-            background-color: #aaaaaa;
+        button[type="reset"]:hover {
+            background-color: #aaa;
+        }
+
+        .error-message,
+        .success-message {
+            grid-column: 1 / -1;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
 
         .error-message {
             color: red;
+        }
+
+        .success-message {
+            color: green;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 25px;
             text-align: center;
-            grid-column: 1 / -1;
-            font-weight: bold;
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <div class="box">
+            <h1>Thêm Nhân Viên</h1>
 
-<div class="container">
-    <div class="box">
-        <h1>Thêm Nhân Viên</h1>
+            {% if error_message %}
+                <p class="error-message">{{ error_message }}</p>
+            {% endif %}
 
-        {% if error_message %}
-            <p class="error-message">{{ error_message }}</p>
-        {% endif %}
-        
-        {% if success_message %}
-            <p class="success-message">{{ success_message }}</p>
-        {% endif %}
+            {% if success_message %}
+                <p class="success-message">{{ success_message }}</p>
+            {% endif %}
 
-        <form action="" method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            
-            <label for="fname">Họ và tên</label>
-            <input type="text" id="fname" name="firstname" required>
+            <form action="" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
 
-            <label for="dname">Phòng ban</label>
-            <select id="dname" name="department">
-                {% for department in departments %}
-                <option value="{{ department.name }}">{{ department.name }}</option>
-                {% endfor %}
-            </select>
+                <div>
+                    <label for="fname">Họ và tên</label>
+                    <input type="text" id="fname" name="firstname" required />
+                </div>
 
-            <label for="id">Mã nhân viên</label>
-            <input type="text" id="id" name="id" required>
+                <div>
+                    <label for="dname">Phòng ban</label>
+                    <select id="dname" name="department">
+                        {% for department in departments %}
+                            <option value="{{ department.name }}">{{ department.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-            <label for="address">Địa chỉ</label>
-            <input type="text" id="address" name="address" required>
+                <div>
+                    <label for="id">Mã nhân viên</label>
+                    <input type="text" id="id" name="id" required />
+                </div>
 
-            <label for="number">Số điện thoại</label>
-            <input type="text" id="number" name="number" pattern="(91||+91)?[0-9]{10}$" required>
+                <div>
+                    <label for="address">Địa chỉ</label>
+                    <input type="text" id="address" name="address" required />
+                </div>
 
-            <label for="dest">Nơi công tác</label>
-            <input type="text" id="dest" name="dest">
+                <div>
+                    <label for="number">Số điện thoại</label>
+                    <input type="text" id="number" name="number" pattern="(91||+91)?[0-9]{10}$" required />
+                </div>
 
-            <label for="dob">Ngày sinh</label>
-            <input type="date" id="dob" name="dob" required>
+                <div>
+                    <label for="dest">Nơi công tác</label>
+                    <input type="text" id="dest" name="dest" />
+                </div>
 
-            <label for="doj">Ngày vào làm</label>
-            <input type="date" id="doj" name="doj" required>
+                <div>
+                    <label for="dob">Ngày sinh</label>
+                    <input type="date" id="dob" name="dob" required />
+                </div>
 
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required>
+                <div>
+                    <label for="doj">Ngày vào làm</label>
+                    <input type="date" id="doj" name="doj" required />
+                </div>
 
-            <label for="des">Chức vụ</label>
-            <input type="text" id="des" name="des">
+                <div>
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required />
+                </div>
 
-            <label for="desc">Mô tả (nếu có)</label>
-            <input type="text" id="desc" name="desc">
+                <div>
+                    <label for="des">Chức vụ</label>
+                    <input type="text" id="des" name="des" />
+                </div>
 
-            <label for="pictureInput">Chọn ảnh</label>
-            <input type="file" id="pictureInput" name="pictureInput" accept="image/*">
+                <div class="full-width">
+                    <label for="desc">Mô tả (nếu có)</label>
+                    <input type="text" id="desc" name="desc" />
+                </div>
 
-            <div class="button-wrapper">
-                <button type="reset">Đặt lại</button>
-                <button type="submit">Xác nhận</button>
-            </div>
-            <a href="{% url 'AdminDashboard' %}" class="back-link">
-                <i class="fas fa-arrow-left"></i> Quay lại bảng điều khiển
-            </a>
-        </form>
+                <div class="full-width">
+                    <label for="pictureInput">Chọn ảnh</label>
+                    <input type="file" id="pictureInput" name="pictureInput" accept="image/*" />
+                </div>
+
+                <div class="button-wrapper">
+                    <button type="reset">Đặt lại</button>
+                    <button type="submit">Xác nhận</button>
+                </div>
+
+                <a href="{% url 'AdminDashboard' %}" class="back-link">
+                    ← Quay lại bảng điều khiển
+                </a>
+            </form>
+        </div>
     </div>
-</div>
-
 </body>
 </html>

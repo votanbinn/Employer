@@ -5,102 +5,137 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Giao Công Việc</title>
 
-    <!-- Include Bootstrap CSS -->
+    <!-- Bootstrap & Libraries -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Include jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Include Select2 CSS and JS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-
-    <!-- Include jQuery UI and Timepicker CSS/JS -->
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.10.0/jquery.timepicker.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.10.0/jquery.timepicker.min.css">
-
-    <!-- Include Font Awesome CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> 
 
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f2f2f2;
+            background-color: rgb(21, 85, 101);
             color: #333;
+            padding: 0;
+            margin: 0;
+            font-size: 17px; /* tăng cỡ chữ toàn trang */
         }
+
         h1 {
             text-align: center;
-            margin-bottom: 20px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 36px;
-            color: #007bff;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            padding-top: 30px;
+            font-size: 2.7rem; /* tăng nhẹ */
+            color:rgb(255, 255, 255);
+            font-weight: 600;
         }
+
         .container {
-            width: 80%;
-            margin: 20px auto;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            max-width: 700px;
+            margin: 40px auto;
+            background-color: rgba(255, 255, 255, 0.93);
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
-        form {
-            max-width: 600px;
-            margin: 0 auto;
+
+        .back-link {
+            display: inline-block;
+            margin: 20px 40px;
+            color:rgb(21, 85, 101);
+            font-size: 17px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
         }
-        label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: bold;
-            color: #555;
+
+        .back-link:hover {
+            text-decoration: underline;
+            color: #0056b3;
         }
-        input[type=email], input[type=text], textarea, select {
+
+        form label {
+            font-weight: 600;
+            color: #555 ;
+            font-size: 17px;
+        }
+
+        input[type=email],
+        input[type=text],
+        textarea,
+        select {
             width: 100%;
             padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
             margin-bottom: 20px;
-            font-size: 16px;
+            font-size: 17px; /* tăng cỡ chữ input */
         }
+
         input[type="submit"] {
             background-color: #007bff;
             color: #fff;
-            padding: 12px 20px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
+            font-size: 17px;
+            font-weight: 600;
             cursor: pointer;
-            font-size: 16px;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+
         input[type="submit"]:hover {
             background-color: #0056b3;
         }
 
-        /* Style for Select2 dropdown */
-        .select2-container--default .select2-selection--multiple {
-            border-radius: 5px;
-            padding: 10px;
-            height: auto;
+        input[type="submit"] i {
+            margin-right: 8px;
         }
+
+        /* Select2 styling */
+        .select2-container--default .select2-selection--multiple {
+            border-radius: 6px;
+            border: 1px solid #ced4da;
+            padding: 8px;
+            font-size: 17px;
+        }
+
         .select2-container .select2-selection__choice {
             background-color: #007bff;
             color: white;
-            border-radius: 5px;
+            border-radius: 4px;
+            padding: 4px 8px;
+            margin: 4px 4px 0 0;
+            font-size: 16px;
+        }
+
+        .select2-selection__rendered {
+            padding: 0;
         }
     </style>
 </head>
 <body>
+
     <h1>Giao Công Việc</h1>
-    <a href="{% url 'AdminDashboard' %}" class="back-link">
-        <i class="fas fa-arrow-left"></i> Quay lại bảng điều khiển
-    </a>
+
     <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <a href="{% url 'AdminDashboard' %}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left"></i> Quay lại bảng điều khiển
+            </a>
+        </div>
         <form method="POST">
             {% csrf_token %}
             {{ form.as_p }}
-            <input type="submit" value="Giao Công Việc">
+            <button type="submit" class="btn btn-primary w-100 mt-3">
+                <i class="fas fa-tasks"></i> Giao Công Việc
+            </button>
         </form>
     </div>
 
@@ -109,8 +144,8 @@
         $(document).ready(function() {
             $('#id_assigned_to').select2({
                 placeholder: "Chọn nhân viên",
-                allowClear: true, // Cho phép bỏ chọn
-                width: '100%' // Đảm bảo Select2 đầy đủ chiều rộng
+                allowClear: true,
+                width: '100%'
             });
         });
     </script>
